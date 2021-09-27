@@ -1,25 +1,26 @@
-Example Python Quickfix Code that hopefully someone can use
-===========================================
+Ejemplo de uso de Python Quickfix
+=================================
 
-Had a helluva time finding Quickfix examples written in Python.  Finally got my project completed and figured if nothing else, some line in here might help someone else with their project.  That said, my code is crap.  I know that.  I can live with it.  I'm not a developer. All I did was stay at a Holiday Inn Express one night back in 2008.
+Servidor de FIX4.2 que permite controlar las respuestas que el servidor devuelve manualmente. Notifica cuando los clientes se conectan
+y desconectan, cuando envian órdenes, cancelaciones y requisiciones de reemplazo. No responde automáticamente, permite que el usuario
+reaccione manualmente de la manera que desee.
 
-If you want to run this thing as-is, here's a brief idea of what it does.  It's a FIX4.2 server that allows you to manually control your responses.  I built this to help troubleshoot a specific condition we were seeing in our trading platform because of one particular broker's craptastic FIX server.  Once launched (with the quickfix config file as a command-line param), it notifies you when clients connect and disconnect, and when they send orders, cancels, or replace requests.  It does not automatically respond to any of these, instead allowing you to react to these events how you want.  Typing "help" at the prompt lets you see your options:
+Comandos:
 
-    --> help
-    Commands are:
-        book                       ## Shows current order book
-        ack [orderID]              ## Sends acknowledgement on orderID
-        cancel [orderID]           ## Sends cancel ack on orderID
-        fill [orderID] [quantity]  ## Sends a fill on orderID with quantity
-        order [orderID]            ## Provides details about the orderID
-        remove [orderID]           ## Removes the order from the book
-        replace [orderID]          ## Sends a ReplaceAck on orderID
-        replacepend [orderID]      ## Sends a ReplacePending message for orderID
-        exit                       ## Shuts down this server
-
-Some notes:
-- "orderID" in the command params is the orderID assigned, NOT the clientOrderID of the message received.
-- It supports multiple concurrent clients (nice!).
-- It has no logic for dealing with sequence number issues (not so nice)
-- If you have issues, I recommend clearing quickfix cache, setting seqnos to 1, and trying again
-- It doesn't automatically clear an order out of its book when the order is done, allowing you to send more messages back to the client if you want
+--> help ## ayuda
+    print "Los comandos son: "
+    book                       ## Muestra el libro de ordenes actual"
+    ack [orderID]              ## Manda ack de un orden con orderID [orderID]"
+    cancel [orderID]           ## Manda ack de cancelacion de orden con [orderID]"
+    fill [orderID] [quantity]  ## Manda Fill de orderID con cantidad [quantity]"
+    order [orderID]            ## Detalles de la orden [orderID]"
+    remove [orderID]           ## Saca la orden [orderID] del libro"
+    replace [orderID]          ## Manda un ReplaceAck para la orden [orderID]"
+    replacepend [orderID]      ## Manda mensaje ReplacePending para la orden [orderID]"
+    exit                       ## Cierra el servidor"
+    
+Algunas notas:
+- "orderID" de los parámetros de un comando es la orderID asignada, no la clientOrderID en el mensaje recibido
+- el programa soporta clientes concurrentes
+- no hay lógica para lidiar con problemas de sequence numbers
+- no elimina la orden del libro cuando está finalizada, se pueden seguir mandando mensajes para estas órdenes

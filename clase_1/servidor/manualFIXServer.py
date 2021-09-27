@@ -23,11 +23,13 @@ class FIXServer(quickfix.Application):
         self.sessions[targetCompID]['execID']    = 0
 
     def onLogon(self, session):
+        # invocado cuando un cliente se loguea
         targetCompID                             = session.getTargetCompID().getValue()
         self.sessions[targetCompID]['connected'] = True
         print "\nClient {} esta logueado\n--> ".format(targetCompID),
 
     def onLogout(self, session):
+        # invocado cuando un cliente se desloguea
         targetCompID                             = session.getTargetCompID().getValue()
         self.sessions[targetCompID]['connected'] = False
         print "\nClient {} se deslogueo\n--> ".format(targetCompID),
@@ -42,6 +44,7 @@ class FIXServer(quickfix.Application):
         return
 
     def fromApp(self, message, session):
+        # invocado al recibir mensaje de un cliente
         clientOrderID = self.getValue(message, quickfix.ClOrdID())
         targetCompID  = session.getTargetCompID().getValue()
         details       = {'session'  : session,
@@ -54,7 +57,7 @@ class FIXServer(quickfix.Application):
                          'leaves'   : self.getValue(message, quickfix.OrderQty())}
 
         if self.getHeaderValue(message, quickfix.MsgType()) == quickfix.MsgType_NewOrderSingle:
-            ## Received new order from client
+            ## una nueva orden fue recibida del cliente
             orderID = self.getNextOrderID()
             print "\nNewOrder {} received\n--> ".format(orderID),
             details['ordType'] = self.getValue(message, quickfix.OrdType())
@@ -62,25 +65,26 @@ class FIXServer(quickfix.Application):
 
             if (self.getValue(message, quickfix.OrdType()) == quickfix.OrdType_LIMIT or
                     self.getValue(message, quickfix.OrdType()) == quickfix.OrdType_LIMIT_ON_CLOSE):
-                # Limit orders will have a price, Market order will not.
+                # órdenes límites tiene precio, órdenes market no
                 details['price'] = self.getValue(message, quickfix.Price())
 
             self.orders[orderID] = details
             self.sessions[targetCompID][clientOrderID] = orderID
 
         if self.getHeaderValue(message, quickfix.MsgType()) == quickfix.MsgType_OrderCancelRequest:
+            # orden de cancelación
             origClientOrderID      = self.getValue(message, quickfix.OrigClOrdID())
             details['origClOrdID'] = origClientOrderID
             details['cxlClOrdID']  = clientOrderID
 
             if origClientOrderID not in self.sessions[targetCompID]:
-                # A cancel request has come in for an order we don't have in the book
-                # So let's create that order in the book based on what we know
+                # llegó una cancelación de una orden que no está en el libro de órdenes
+                # creamos una orden con los detalles que sabemos
                 orderID                                        = self.getNextOrderID()
                 self.orders[orderID]                           = details
                 self.sessions[targetCompID][origClientOrderID] = orderID
             else:
-                ## We have the order in the book
+                ## La orden fue encontrada en el libro
                 orderID = self.sessions[targetCompID][origClientOrderID]
                 self.orders[orderID]['cxlClOrdID']   = clientOrderID
 
@@ -88,16 +92,17 @@ class FIXServer(quickfix.Application):
             print "\n CancelRequest para la orden con OrderID {} recibido\n--> ".format(orderID),
 
         if self.getHeaderValue(message, quickfix.MsgType()) == quickfix.MsgType_OrderCancelReplaceRequest:
+            # orden de cancelación y reemplazo
             origClientOrderID = self.getValue(message, quickfix.OrigClOrdID())
 
             if origClientOrderID not in self.sessions[targetCompID]:
-                ## A replace request has come in for an order we don't have in the book
+                ## llegó una orden de reemplazo para una orden que no está en el libro
                 orderID                                        = self.getNextOrderID()
                 self.orders[orderID]                           = details
                 self.sessions[targetCompID][origClientOrderID] = orderID
 
             else:
-                ## We have the original order in the book
+                ## la orden a reemplazar fue encontrada en el libro
                 orderID = self.sessions[targetCompID][origClientOrderID]
 
             self.orders[orderID]['rplClOrdID'] = clientOrderID
@@ -111,10 +116,12 @@ class FIXServer(quickfix.Application):
             print "OrderID {} para reemplazar OrderID {} recibida\n--> ".format(newOrderID, orderID),
 
     def getNextOrderID(self):
+        # próximo ID de órdenes
         self.lastOrderID += 1
         return self.lastOrderID
 
     def getNextExecID(self, targetCompID):
+        # próximo ID de ejecuciones
         self.sessions[targetCompID]['execID'] += 1
         return "{}_{}".format(targetCompID, self.sessions[targetCompID]['execID'])
 
@@ -139,6 +146,7 @@ class FIXServer(quickfix.Application):
         return message
 
     def sendOrderAck(self, orderID):
+        # manda un ack de recepción de orden
         message = self.startFIXString(orderID)
         message.setField(quickfix.ExecType(quickfix.ExecType_NEW))
         message.setField(quickfix.ExecTransType(quickfix.ExecTransType_NEW))
@@ -147,6 +155,7 @@ class FIXServer(quickfix.Application):
         self.orders[orderID]['state'] = 'New'
 
     def sendCancelAck(self, orderID):
+        # manda un ack de cancelación de orden
         message = self.startFIXString(orderID)
         message.setField(quickfix.OrderQty(self.orders[orderID]['leaves']))
         message.setField(quickfix.ExecType(quickfix.ExecType_CANCELED))
@@ -160,6 +169,7 @@ class FIXServer(quickfix.Application):
         self.orders[orderID]['state'] = 'Canceled'
 
     def sendReplaceAck(self, orderID):
+        # manda un ack de reemplazo de orden
         origOrdID         = self.orders[orderID]['origOrdID']
         origClientOrderID = self.orders[orderID]['origClOrdID']
         message = self.startFIXString(orderID)
@@ -173,6 +183,7 @@ class FIXServer(quickfix.Application):
         self.orders[origOrdID]['state'] = 'Replaced'
 
     def sendReplacePending(self, orderID):
+        # manda un mensaje de pending replace (reemplazo pendiente)
         origClientOrderID = self.orders[orderID]['origClOrdID']
         message = self.startFIXString(orderID)
         message.setField(quickfix.OrderQty(self.orders[orderID]['quantity']))
@@ -182,6 +193,7 @@ class FIXServer(quickfix.Application):
         quickfix.Session.sendToTarget(message, self.orders[orderID]['session'])
 
     def sendFill(self, orderID, quantity):
+        # envía un mensaje de FILL o PARTIAL FILL
         message = self.startFIXString(orderID)
         if self.orders[orderID]['leaves'] <= quantity:
             message.setField(quickfix.OrdStatus(quickfix.OrdStatus_FILLED))

@@ -1,25 +1,20 @@
-quickfix-python-sample
-======================
+ejemplo de aplicación de quickfix
+=================================
 
-Sample python quickfix executor and client applications.
+*Requerimientos: 
+instalar quickfix http://www.quickfixengine.org/download
 
-*Requirements: 
-Install quickfix http://www.quickfixengine.org/download
+*Ejecución:
+python client.py client.cfg (envío de órdenes interactivas)
 
-TODO: add info on how to build quickfix in ubuntu
+1 - envía orden
+2 - sale del programa
+d - pdb.set_trace() - permite debuguear
 
-*Execution:
-python executor.py executor.cfg (Executes new limit orders)
-python client.py client.cfg (Interactive order placement)
-
-1 - places order
-2 - exits
-d - pdb.set_trace() - to check what a mess inside a SWIG generated code
-
-You can check what is going on in Logs folder by:
+Para mirar los logs en la carpeta Logs:
 tail -f *
 
-or using wireshark, as it has a good representation plugins for FIX
+o también es posible usar wireshark, que tiene una buena representación de mensajes FIX 
 
 
 
