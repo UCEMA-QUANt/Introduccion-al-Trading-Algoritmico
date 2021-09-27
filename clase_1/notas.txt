@@ -1,6 +1,6 @@
 Para correr estos ejemplos es necesario utilizar Python 2.7.
 
-- primero instalar los requerimientos: pip install requirements.txt
+- primero instalar los requerimientos: pip install -r requirements.txt
 - luego abrir dos consolas de comando, en una de ellas va a correr el servidor, en la otra el cliente
 - en la primera consola ir al directorio /clase_1/servidor del repo y ejecutar el comando:
   $ python manualFIXServer.py
