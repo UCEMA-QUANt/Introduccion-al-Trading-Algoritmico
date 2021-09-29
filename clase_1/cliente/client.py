@@ -56,6 +56,7 @@ class Application(fix.Application):
     @echo
     def fromApp(self, message, sessionID):
         # callback invocado cuando recibe mensaje de aplicacion
+        # procesar el mensaje para, si es una ejecucion, contabilizar lo que fue ejecutado
         print "Mensaje recibido: %s" % message.toString()
         return
     @echo

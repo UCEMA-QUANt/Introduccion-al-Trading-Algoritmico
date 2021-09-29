@@ -35,6 +35,7 @@ class IBapi(EWrapper, EClient):
 def run_loop():
 	app.run()
 
+
 #Function to create FX Order contract
 def FX_order(symbol):
 	contract = Contract()
@@ -67,7 +68,7 @@ order = Order()
 order.action = 'BUY'
 order.totalQuantity = 100000
 order.orderType = 'LMT'
-order.lmtPrice = '1.10'
+order.lmtPrice = '1.158'
 
 #Place order
 app.placeOrder(app.nextorderId, FX_order('EURUSD'), order)

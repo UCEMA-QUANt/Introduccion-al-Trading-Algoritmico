@@ -6,8 +6,7 @@ Created on Wed Nov 11 18:17:08 2020
 """
 
 import pyRofex
-
-
+import time
 import json
 
 with open('config.json') as f:
@@ -36,16 +35,16 @@ def order_report_handler(message):
 def error_handler(message):
     print("Mensaje de Error recibido: {0}".format(message))
 def exception_handler(e):
-    print("Ocurrió una excepción: {0}".format(e.message))
+    print("Ocurrió una excepción: {0}".format(e))
 
 # Se inicia la conexión websocket y se pasan los callbacks definidos
 pyRofex.init_websocket_connection(market_data_handler=market_data_handler,
                                   order_report_handler=order_report_handler,
                                   error_handler=error_handler,
                                   exception_handler=exception_handler)
-
+#%%
 # Definimos la lista de instrumentos de los cuales obtener Market Data
-instruments = ["DONov20", "DODic20"]
+instruments = ["DLR/Oct21", "DLR/Nov21"]
 # Definimos los detalles que queremos obtener de cada instrumento
 entries = [pyRofex.MarketDataEntry.BIDS,
            pyRofex.MarketDataEntry.OFFERS,
@@ -65,7 +64,7 @@ pyRofex.market_data_subscription(tickers=instruments,
 pyRofex.order_report_subscription()
 
 # Envía una orden límite de compra para el DONov20
-order = pyRofex.send_order(ticker="DONov20",
+order = pyRofex.send_order(ticker="DLR/Oct21",
                    side=pyRofex.Side.BUY,
                    size=10,
                    price=81.30,

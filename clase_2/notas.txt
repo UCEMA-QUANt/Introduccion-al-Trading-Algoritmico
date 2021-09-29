@@ -1,0 +1,18 @@
+# para instalar simplefix: 
+pip install simplefix
+
+# para instalar interactive brokers:
+1. instalar el Trader Workstation (TWS)
+2. configurar para que no sea Read Only
+3. descargar la api API en: https://interactivebrokers.github.io/
+4. instalarla la API
+5. en al consola de comandos ir a C:\TWS API\source\pythonclient
+6. ejecutar:
+  $ python setup.py bdist_wheel
+  $ python setup.py install
+	
+# instalar pyRofex (rofex/matba):
+  $ pip install -U pyRofex
+
+# instalar yfinance:
+  $ pip install yfinance

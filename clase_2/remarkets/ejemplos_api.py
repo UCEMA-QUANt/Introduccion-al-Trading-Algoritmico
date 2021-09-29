@@ -6,7 +6,7 @@ Created on Wed Nov 11 18:15:33 2020
 """
 
 import pyRofex
-
+import datetime
 
 import json
 
@@ -53,7 +53,7 @@ for i in range(5):
 #%% ########### MARKET DATA #############
 # Realiza un pedido a la API Rest para obtener el último precio, bids y offers del instrumento
 entries = [pyRofex.MarketDataEntry.BIDS, pyRofex.MarketDataEntry.OFFERS, pyRofex.MarketDataEntry.LAST]
-ticker = "DONov20"
+ticker = "DLR/Oct21"
 market_data = pyRofex.get_market_data(ticker=ticker,entries=entries, depth=5)
 
 print("Respuesta al pedido de market data para {0}: {1}".format(ticker, market_data))
@@ -78,12 +78,18 @@ market_data = pyRofex.get_market_data(ticker, entries)
 print("Market data más completa para {0}: {1}".format(ticker, market_data))
 
 #%%
+import datetime
+
 
 # Obtener datos históricos desde el comienzo del año hasta hoy
 end = datetime.date.today()
-start = datetime.date(year=end.year, month=1, day=1)
+start = datetime.date(year=end.year, month=9, day=1)
 historic_trades = pyRofex.get_trade_history(ticker=ticker, start_date=start, end_date=end)
 print("Datos históricos {0} from {1} to {2}: {3}".format(ticker, start, end, historic_trades))
+
+# obtener los precios de los trades y printear
+trades = [e['price'] for e in historic_trades['trades']]
+print(trades)
 
 #%% Manejo de órdenes
 
@@ -91,7 +97,7 @@ print("Datos históricos {0} from {1} to {2}: {3}".format(ticker, start, end, hi
 order = pyRofex.send_order(ticker=ticker,
                            side=pyRofex.Side.BUY,
                            size=10,
-                           price=81.10,
+                           price=100.72,
                            order_type=pyRofex.OrderType.LIMIT)
 
 # Print the response

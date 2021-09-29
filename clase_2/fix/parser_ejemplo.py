@@ -21,7 +21,7 @@ sample_Xs = ["8=FIXT.1.19=94135=X34=3949=STUN52=20191218-15:13:47.32556=XX
 "8=FIXT.1.19=30935=X34=7549=STUN52=20191218-15:13:48.02356=XXXX115=FGW262=HUB083_MD_15766707131421021=2268=2279=2269=155=AY2448=AY24-0003-C-CT-ARS167=GO207=XMEV106=0500-R270=2894.5271=65030290=163=3279=0269=155=AY2448=AY24-0003-C-CT-ARS167=GO207=XMEV106=0500-R270=2903271=500346=1290=563=310=076",
 "8=FIXT.1.19=21235=X34=8549=STUN52=20191218-15:13:48.05556=XXXX115=FGW262=HUB083_MD_15766707131421021=2268=1279=0269=155=AY2448=AY24-0003-C-CT-ARS167=GO207=XMEV106=0500-R270=2894.5271=69096346=1290=163=310=019"]
 
-# constants:
+# constantes:
 
 REFRESH_TYPE = '35'
 FULL_REFRESH = b'W'
@@ -53,7 +53,7 @@ POSITION = '290'
 #%%
 
 def refresh_type(message):
-    ''' Returns the type of market data refresh type Fix message'''
+    ''' retorna el tipo de mensaje de FIX de market data del que se trata '''
     if message.get(fix.REFRESH_TYPE) == fix.FULL_REFRESH:
         return 'FULL'
     elif message.get(fix.REFRESH_TYPE) == fix.INCREMENTAL_REFRESH:
@@ -62,7 +62,7 @@ def refresh_type(message):
         print('Unknown refresh message type')
 
 def get_message_from_string(string):
-    ''' Returns a Fix Message object from the df raw data'''
+    ''' retorna el objeto Fix Message correspondiente a la data cruda de input '''
     parser = sf.parser.FixParser()
     parser.append_buffer(string)
     return parser.get_message()
@@ -90,13 +90,13 @@ def parse_full_refresh_message(message):
     '''
     bids = [[0,0]]*5
     offers = [[0,0]]*5
-    num_blocks = msg.get(NUM_MESSAGES)
+    num_blocks = msg.get(NUM_MESSAGES) # obtiene el numero de entradas del tag 268
     for i in range(1, int(num_blocks)+1):
-        type_ = msg.get(MESSAGE_TYPE,i)
+        type_ = msg.get(MESSAGE_TYPE,i) # determina si es un bid o ask
         if type_ in [BID,OFFER]:
-            px = float(msg.get(PRICE,i))
-            qty = int(msg.get(QTY,i))
-            position = int(msg.get(POSITION,i))
+            px = float(msg.get(PRICE,i)) # obtiene el precio
+            qty = int(msg.get(QTY,i)) # la cantidad
+            position = int(msg.get(POSITION,i)) # y la posicion en el libro
             if type_ == BID:
                 bids[position-1] = [qty,px]
             if type_ == OFFER:
