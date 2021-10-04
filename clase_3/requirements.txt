@@ -96,7 +96,7 @@ python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
 python-jsonrpc-server @ file:///tmp/build/80754af9/python-jsonrpc-server_1600278539111/work
 python-language-server @ file:///tmp/build/80754af9/python-language-server_1607972495879/work
 pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
-pywin32==228
+pywin32==301
 pywin32-ctypes==0.2.0
 pywinpty==0.5.7
 PyYAML==5.4.1
