@@ -60,8 +60,8 @@ def get_rates(cost_c=0, cost_t=0):
     colocadora = []; tomadora = []
     for i in range(0, len(spots)):
         spot = spots[i]; fwd = forwards[i]
-        colocadora.append( round( (sell_fwd[fwd] - buy_spot[spot] - cost_c)/buy_spot[spot] * 100, 6 ) )
-        tomadora.append( round( (buy_fwd[fwd] - sell_spot[spot] - cost_t)/sell_spot[spot] * 100, 6 ) )
+        colocadora.append( round( (sell_fwd[fwd] - buy_spot[spot] - cost_c)/sell_fwd[fwd] * 100, 6 ) )
+        tomadora.append( round( (buy_fwd[fwd] - sell_spot[spot] + cost_t)/sell_spot[spot] * 100, 6 ) )
     
     return colocadora, tomadora, buy_spot, sell_spot, buy_fwd, sell_fwd
 
@@ -71,29 +71,32 @@ def print_rates(colocadora, tomadora):
 
 def check_opportunities(colocadora, tomadora, buy_spot, sell_spot, buy_fwd, sell_fwd):
     for i in range(0, len(spots)):
-        if colocadora[i] > tomadora[i]:
-            # si hay una oportunidad enviar las ordenes a rofex
-            fwd = forwards[i]; spot = spots[i]
-
-            profit = round((colocadora[i]-tomadora[i])*100, 2)
-            print("** Oportunidad ", spots[i], "-", fwd, " **",
-                  "\nSpot - Comprar a: ", buy_spot[spot], " Vender a: ", sell_spot[spot],
-                  "\nProfit: ", profit, "%\n")
-            
-            # mando las órdenes a Rofex usando el tamaño que veo disponible
-            pyRofex.send_order(ticker=fwd, 
-                               size=sizes_fwd[fwd][0], 
-                               side=pyRofex.Side.BUY, 
-                               order_type=pyRofex.OrderType.LIMIT, 
-                               price=buy_fwd[fwd],
-                               cancel_previous=True)
-
-            pyRofex.send_order(ticker=fwd, 
-                               size=sizes_fwd[fwd][1], 
-                               side=pyRofex.Side.SELL, 
-                               order_type=pyRofex.OrderType.LIMIT, 
-                               price=sell_fwd[fwd],
-                               cancel_previous=True)
+        for j in range(i+1, len(spots)):
+            if colocadora[i] > tomadora[j]:
+                # si hay una oportunidad enviar las ordenes a rofex
+                fwd_colocadora = forwards[i]; spot_colocadora = spots[i]
+                fwd_tomadora = forwards[j]; spot_tomadora = spots[j]
+    
+                profit = round((colocadora[i]-tomadora[j]), 2)
+                print("** Oportunidad:"
+                      "\n Colocar ",spot_colocadora,"- Comprar spot a: ", buy_spot[spot_colocadora], " Vender futuro a: ", sell_fwd[fwd_colocadora],
+                      "\n Tomar ",spot_tomadora,"- Vender spot a: ", sell_spot[spot_tomadora], " Comprar futuro a: ", buy_fwd[fwd_tomadora],
+                      "\n Diferencia de tasa: ", profit, "%\n")
+                
+                # mando las órdenes a Rofex usando el tamaño que veo disponible
+                pyRofex.send_order(ticker=fwd_tomadora, 
+                                   size=sizes_fwd[fwd_tomadora][0], 
+                                   side=pyRofex.Side.BUY, 
+                                   order_type=pyRofex.OrderType.LIMIT, 
+                                   price=buy_fwd[fwd_tomadora],
+                                   cancel_previous=True)
+    
+                pyRofex.send_order(ticker=fwd_colocadora, 
+                                   size=sizes_fwd[fwd_colocadora][1], 
+                                   side=pyRofex.Side.SELL, 
+                                   order_type=pyRofex.OrderType.LIMIT, 
+                                   price=sell_fwd[fwd_colocadora],
+                                   cancel_previous=True)
 
 def update_rates(cost_c=0, cost_t=0, wait_time=1):
     # actualizar tasas
