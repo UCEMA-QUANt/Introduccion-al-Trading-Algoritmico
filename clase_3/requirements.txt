@@ -71,7 +71,7 @@ parso==0.7.0
 pathspec==0.7.0
 pexpect @ file:///tmp/build/80754af9/pexpect_1605563209008/work
 pickleshare @ file:///tmp/build/80754af9/pickleshare_1606932040724/work
-Pillow==8.3.2
+Pillow==9.0.0
 pluggy @ file:///C:/ci/pluggy_1615976358795/work
 prometheus-client @ file:///tmp/build/80754af9/prometheus_client_1623189609245/work
 prompt-toolkit @ file:///Users/ktietz/demo/mc3/conda-bld/prompt-toolkit_1629146841569/work
