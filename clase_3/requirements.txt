@@ -61,7 +61,7 @@ nbconvert @ file:///C:/ci/nbconvert_1624479163777/work
 nbformat @ file:///tmp/build/80754af9/nbformat_1617383369282/work
 nest-asyncio @ file:///tmp/build/80754af9/nest-asyncio_1613680548246/work
 notebook @ file:///C:/ci/notebook_1629205926310/work
-numpy==1.21.2
+numpy==1.22.0
 numpydoc @ file:///tmp/build/80754af9/numpydoc_1605117425582/work
 packaging @ file:///tmp/build/80754af9/packaging_1625611678980/work
 pandas==1.3.3
