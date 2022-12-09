@@ -14,7 +14,7 @@ biplist==1.0.3
 black==19.10b0
 bleach @ file:///tmp/build/80754af9/bleach_1628110601003/work
 brotlipy==0.7.0
-certifi==2021.5.30
+certifi==2022.12.7
 cffi @ file:///C:/ci/cffi_1625831749120/work
 chardet @ file:///C:/ci/chardet_1607690654534/work
 charset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work
